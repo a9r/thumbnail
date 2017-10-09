@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width">
+    <title>Thumb</title>
+    <style>
+        body{margin:0;}
+        #wrapper{position: relative;}
+        #holder {position: fixed;top:0;bottom:0;left:0;right:0;border:2px dashed #ccc;background:transparent;z-index:9;}
+        #holder.hover { border-color: #0c0; }
+        #holder img { display: block; margin: 10px auto; }
+        #thumbs{position: fixed;top:30px;bottom:0;left:0;right:0;}
+    </style>
+</head>
+<body>
+<section id="wrapper">
+    <div id="holder"></div>
+    <div id="thumbs"></div>
+</section>
+<script>
+var holder = document.querySelector('#holder');
+function previewfile(file) {
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        var image = new Image();
+        var toSize = [128,144,152,192,256];
+        image.onload = function() {
+            var oc = document.createElement('canvas'), octx = oc.getContext('2d');
+            document.querySelector('#thumbs').innerHTML='';
+            for(var i=0;i<toSize.length;i++){
+                oc.width = image.width;
+                oc.height = image.height;
+                octx.drawImage(image, 0, 0);
+                if( image.width > image.height) {
+                    oc.height = (image.height / image.width) * toSize[i];
+                    oc.width = toSize[i];
+                } else {
+                    oc.width = (image.width / image.height) * toSize[i];
+                    oc.height = toSize[i];
+                }
+                octx.drawImage(oc, 0, 0, oc.width, oc.height);          
+                octx.drawImage(image, 0, 0, oc.width, oc.height);
+                var data = oc.toDataURL();
+                var img = new Image();
+                img.src=data;
+                var aLink = document.createElement('a');
+                aLink.download = oc.width + 'x' + oc.height + '.png';
+                aLink.href = data;
+                document.querySelector('#thumbs').appendChild(aLink).appendChild(img)
+            }
+        };
+        image.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+holder.ondragover = function (){this.className='hover';return false;};
+holder.ondragend = function (){this.className='';return false;};
+holder.ondrop = function (e){this.className=''; e.preventDefault(); previewfile(e.dataTransfer.files[0])}
+</script>
+</body>
+</html>
