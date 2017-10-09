@@ -5,19 +5,13 @@
     <meta name="viewport" content="width=device-width">
     <title>Thumb</title>
     <style>
-        body{margin:0;}
-        #wrapper{position: relative;}
-        #holder {position: fixed;top:0;bottom:0;left:0;right:0;border:2px dashed #ccc;background:transparent;z-index:9;}
-        #holder.hover { border-color: #0c0; }
-        #holder img { display: block; margin: 10px auto; }
-        #thumbs{position: fixed;top:30px;bottom:0;left:0;right:0;}
+        #holder {margin:0;min-height:100vh;background:#f1f1f1;transition:background.3s;}
+        #holder.hover {background: #ddd;}
+        .tip{position: fixed;top:50vh;width:100vw;text-align: center;}
     </style>
 </head>
-<body>
-<section id="wrapper">
-    <div id="holder"></div>
-    <div id="thumbs"></div>
-</section>
+<body id="holder">
+    <div class="tip">drop picture here.</div>
 <script>
 var holder = document.querySelector('#holder');
 function previewfile(file) {
@@ -27,7 +21,7 @@ function previewfile(file) {
         var toSize = [128,144,152,192,256];
         image.onload = function() {
             var oc = document.createElement('canvas'), octx = oc.getContext('2d');
-            document.querySelector('#thumbs').innerHTML='';
+            holder.innerHTML='';
             for(var i=0;i<toSize.length;i++){
                 oc.width = image.width;
                 oc.height = image.height;
@@ -46,8 +40,9 @@ function previewfile(file) {
                 img.src=data;
                 var aLink = document.createElement('a');
                 aLink.download = oc.width + 'x' + oc.height + '.png';
+                aLink.title = oc.width + 'x' + oc.height;
                 aLink.href = data;
-                document.querySelector('#thumbs').appendChild(aLink).appendChild(img)
+                holder.appendChild(aLink).appendChild(img)
             }
         };
         image.src = event.target.result;
@@ -55,7 +50,7 @@ function previewfile(file) {
     reader.readAsDataURL(file);
 }
 holder.ondragover = function (){this.className='hover';return false;};
-holder.ondragend = function (){this.className='';return false;};
+holder.ondragleave = function (){this.className='';return false;};
 holder.ondrop = function (e){this.className=''; e.preventDefault(); previewfile(e.dataTransfer.files[0])}
 </script>
 </body>
