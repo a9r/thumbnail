@@ -18,7 +18,7 @@ function previewfile(file) {
     var reader = new FileReader();
     reader.onload = function (event) {
         var image = new Image();
-        var toSize = [128,144,152,192,256];
+        var toSize = [20,128,144,152,192,256];
         image.onload = function() {
             var oc = document.createElement('canvas'), octx = oc.getContext('2d');
             holder.innerHTML='';
